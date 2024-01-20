@@ -1,0 +1,12 @@
+{
+  "name": "nestjs-bootcamp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nestjs/cli": "^10.3.0"
+  }
+}
