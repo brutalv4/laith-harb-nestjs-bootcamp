@@ -5,11 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "expense-app",
+      "name": "realtor-app :3001",
       "type": "node",
       "request": "launch",
       "console": "internalConsole",
-      "cwd": "${workspaceFolder}/expense-app",
+      "cwd": "${workspaceFolder}/realtor-app",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
         "run-script",
