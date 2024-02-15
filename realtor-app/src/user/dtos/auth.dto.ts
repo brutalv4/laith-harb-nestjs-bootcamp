@@ -6,7 +6,18 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class SignupDto {
+export class SigninDto {
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  password: string;
+}
+
+export class SignupDto extends SigninDto {
+  @MinLength(5)
+  password: string;
+
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -15,11 +26,4 @@ export class SignupDto {
     message: 'phone must be a valid phone number',
   })
   phone: string;
-
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  @MinLength(5)
-  password: string;
 }
