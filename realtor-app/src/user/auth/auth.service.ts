@@ -3,7 +3,7 @@ import { User, UserType } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 
-import { SigninDto, SignupDto } from '../dtos/auth.dto';
+import { GenerateProductKeyDto, SigninDto, SignupDto } from '../dtos/auth.dto';
 import { PrismaService } from './../../prisma/prisma.service';
 
 @Injectable()
@@ -43,6 +43,15 @@ export class AuthService {
     }
 
     return this.signJwt(user);
+  }
+
+  async generateProductKey({ email, userType }: GenerateProductKeyDto) {
+    return {
+      productKey: await bcrypt.hash(
+        `${email}-${userType}-${process.env.PRODUCT_KEY_SECRET}`,
+        10,
+      ),
+    };
   }
 
   private findUserByEmail(email: string): Promise<User> {
