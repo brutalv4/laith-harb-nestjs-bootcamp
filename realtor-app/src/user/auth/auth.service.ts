@@ -10,7 +10,10 @@ import { PrismaService } from './../../prisma/prisma.service';
 export class AuthService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async signup({ email, password, name, phone }: SignupDto) {
+  async signup(
+    { email, password, name, phone }: SignupDto,
+    userType: UserType,
+  ) {
     const userExists = !!(await this.findUserByEmail(email));
     if (userExists) {
       throw new ConflictException('user with given email already exits');
@@ -23,7 +26,7 @@ export class AuthService {
         name,
         phone,
         password: hashedPassword,
-        user_type: UserType.BUYER,
+        user_type: userType,
       },
     });
 
@@ -47,11 +50,12 @@ export class AuthService {
 
   async generateProductKey({ email, userType }: GenerateProductKeyDto) {
     return {
-      productKey: await bcrypt.hash(
-        `${email}-${userType}-${process.env.PRODUCT_KEY_SECRET}`,
-        10,
-      ),
+      productKey: await bcrypt.hash(this.productKey(email, userType), 10),
     };
+  }
+
+  productKey(email: string, userType: UserType) {
+    return `${email}-${userType}-${process.env.PRODUCT_KEY_SECRET}`;
   }
 
   private findUserByEmail(email: string): Promise<User> {

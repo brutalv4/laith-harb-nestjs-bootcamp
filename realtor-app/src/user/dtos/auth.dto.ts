@@ -3,6 +3,7 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   MinLength,
@@ -30,6 +31,11 @@ export class SignupDto extends SigninDto {
     message: 'phone must be a valid phone number',
   })
   phone: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  productKey?: string;
 }
 
 export class GenerateProductKeyDto extends UserDto {
