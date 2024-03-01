@@ -5,7 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseFloatPipe,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -43,8 +43,8 @@ export class HomeController {
   }
 
   @Get(':id')
-  getHome(@Param('id') id: string) {
-    return { id };
+  getHome(@Param('id', ParseIntPipe) id: number): Promise<HomeResponseDto> {
+    return this.homeService.getHomeById(id);
   }
 
   @Post()

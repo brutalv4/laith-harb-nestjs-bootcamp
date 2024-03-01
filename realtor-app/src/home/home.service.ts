@@ -17,24 +17,11 @@ interface GetHomesParam {
 export class HomeService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getHomes(filters: GetHomesParam): Promise<HomeResponseDto[]> {
+  async getHomes(where: GetHomesParam): Promise<HomeResponseDto[]> {
+    const select = this.getSelectFields();
     const homes = await this.prismaService.home.findMany({
-      select: {
-        id: true,
-        address: true,
-        city: true,
-        price: true,
-        property_type: true,
-        number_of_bathrooms: true,
-        number_of_bedrooms: true,
-        images: {
-          select: {
-            url: true,
-          },
-          take: 1,
-        },
-      },
-      where: filters,
+      select,
+      where,
     });
 
     if (!homes.length) {
@@ -46,5 +33,37 @@ export class HomeService {
       delete next.images;
       return new HomeResponseDto(next);
     });
+  }
+
+  async getHomeById(id: number) {
+    const select = this.getSelectFields();
+    const home = await this.prismaService.home.findUniqueOrThrow({
+      select: {
+        ...select,
+        images: { select: { url: true } },
+        realtor: { select: { name: true, email: true, phone: true } },
+      },
+      where: { id },
+    });
+
+    return new HomeResponseDto(home);
+  }
+
+  private getSelectFields() {
+    return {
+      id: true,
+      address: true,
+      city: true,
+      price: true,
+      property_type: true,
+      number_of_bathrooms: true,
+      number_of_bedrooms: true,
+      images: {
+        select: {
+          url: true,
+        },
+        take: 1,
+      },
+    };
   }
 }

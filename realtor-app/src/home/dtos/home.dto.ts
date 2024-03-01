@@ -6,7 +6,6 @@ export class HomeResponseDto {
   address: string;
   city: string;
   price: number;
-  property_type: PropertyType;
 
   @Exclude()
   created_at: Date;
@@ -42,6 +41,15 @@ export class HomeResponseDto {
   landSize() {
     return this.land_size;
   }
+
+  @Exclude()
+  property_type: PropertyType;
+  @Expose({ name: 'propertyType' })
+  propertyType() {
+    return this.property_type;
+  }
+
+  images?: any;
 
   constructor(partial: Partial<HomeResponseDto>) {
     Object.assign(this, partial);
