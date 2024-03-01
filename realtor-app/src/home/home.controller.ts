@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseFloatPipe,
   Post,
   Put,
   Query,
@@ -25,7 +26,20 @@ export class HomeController {
     @Query('maxPrice') maxPrice?: string,
     @Query('propertyType') propertyType?: PropertyType,
   ): Promise<HomeResponseDto[]> {
-    return this.homeService.getHomes();
+    const price =
+      minPrice || maxPrice
+        ? {
+            ...(minPrice && { gte: parseFloat(minPrice) }),
+            ...(maxPrice && { lte: parseFloat(maxPrice) }),
+          }
+        : null;
+
+    const filters = {
+      ...(city && { city }),
+      ...(propertyType && { property_type: propertyType }),
+      ...(price && { price }),
+    };
+    return this.homeService.getHomes(filters);
   }
 
   @Get(':id')
