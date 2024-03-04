@@ -37,14 +37,18 @@ export class HomeService {
 
   async getHomeById(id: number) {
     const select = this.getSelectFields();
-    const home = await this.prismaService.home.findUniqueOrThrow({
-      select: {
-        ...select,
-        images: { select: { url: true } },
-        realtor: { select: { name: true, email: true, phone: true } },
-      },
-      where: { id },
-    });
+    const home = await this.prismaService.home
+      .findUniqueOrThrow({
+        select: {
+          ...select,
+          images: { select: { url: true } },
+          realtor: { select: { name: true, email: true, phone: true } },
+        },
+        where: { id },
+      })
+      .catch(() => {
+        throw new NotFoundException('No Home found');
+      });
 
     return new HomeResponseDto(home);
   }
