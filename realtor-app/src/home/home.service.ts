@@ -13,12 +13,38 @@ interface GetHomesParam {
   };
 }
 
+interface CreateHomeParams {
+  address: string;
+  numberOfBedrooms: number;
+  numberOfBathrooms: number;
+  city: string;
+  price: number;
+  landSize: number;
+  propertyType: PropertyType;
+  images: { url: string }[];
+}
+
+const select = {
+  id: true,
+  address: true,
+  city: true,
+  price: true,
+  property_type: true,
+  number_of_bathrooms: true,
+  number_of_bedrooms: true,
+  images: {
+    select: {
+      url: true,
+    },
+    take: 1,
+  },
+};
+
 @Injectable()
 export class HomeService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getHomes(where: GetHomesParam): Promise<HomeResponseDto[]> {
-    const select = this.getSelectFields();
     const homes = await this.prismaService.home.findMany({
       select,
       where,
@@ -36,7 +62,6 @@ export class HomeService {
   }
 
   async getHomeById(id: number) {
-    const select = this.getSelectFields();
     const home = await this.prismaService.home
       .findUniqueOrThrow({
         select: {
@@ -53,21 +78,33 @@ export class HomeService {
     return new HomeResponseDto(home);
   }
 
-  private getSelectFields() {
-    return {
-      id: true,
-      address: true,
-      city: true,
-      price: true,
-      property_type: true,
-      number_of_bathrooms: true,
-      number_of_bedrooms: true,
-      images: {
-        select: {
-          url: true,
-        },
-        take: 1,
+  async createHome({
+    address,
+    city,
+    price,
+    landSize,
+    numberOfBathrooms,
+    numberOfBedrooms,
+    propertyType,
+    images,
+  }: CreateHomeParams) {
+    const home = await this.prismaService.home.create({
+      data: {
+        address,
+        city,
+        price,
+        land_size: landSize,
+        number_of_bathrooms: numberOfBathrooms,
+        number_of_bedrooms: numberOfBedrooms,
+        property_type: propertyType,
+        realtor_id: 1,
       },
-    };
+    });
+
+    const homeImages = images.map((image) => ({ ...image, home_id: home.id }));
+
+    await this.prismaService.image.createMany({ data: homeImages });
+
+    return new HomeResponseDto(home);
   }
 }
