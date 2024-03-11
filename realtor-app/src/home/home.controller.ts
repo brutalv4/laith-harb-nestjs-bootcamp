@@ -63,5 +63,7 @@ export class HomeController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  deleteHome(@Param('id') id: string) {}
+  deleteHome(@Param('id', ParseIntPipe) id: number) {
+    this.homeService.deleteHomeById(id);
+  }
 }
