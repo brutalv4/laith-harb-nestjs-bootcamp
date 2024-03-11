@@ -24,6 +24,16 @@ interface CreateHomeParams {
   images: { url: string }[];
 }
 
+interface UpdateHomeParams {
+  address?: string;
+  numberOfBedrooms?: number;
+  numberOfBathrooms?: number;
+  city?: string;
+  price?: number;
+  landSize?: number;
+  propertyType?: PropertyType;
+}
+
 const select = {
   id: true,
   address: true,
@@ -106,5 +116,20 @@ export class HomeService {
     await this.prismaService.image.createMany({ data: homeImages });
 
     return new HomeResponseDto(home);
+  }
+
+  async updateHomeById(
+    id: number,
+    data: UpdateHomeParams,
+  ): Promise<HomeResponseDto> {
+    // this is just a guard: bypass or throw
+    await this.getHomeById(id);
+
+    const updatedHome = await this.prismaService.home.update({
+      where: { id },
+      data,
+    });
+
+    return new HomeResponseDto(updatedHome);
   }
 }
