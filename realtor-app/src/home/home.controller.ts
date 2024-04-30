@@ -12,7 +12,8 @@ import {
   Query,
   UnauthorizedException,
 } from '@nestjs/common';
-import { PropertyType } from '@prisma/client';
+import { PropertyType, UserType } from '@prisma/client';
+import { Roles } from 'src/decorators/roles.decorator';
 
 import { User, UserInfo } from '../user/decorators/user.decorator';
 import { CreateHomeDto, HomeResponseDto, UpdateHomeDto } from './dtos/home.dto';
@@ -51,11 +52,14 @@ export class HomeController {
   }
 
   @Post()
+  @Roles(UserType.REALTOR)
   createHome(@Body() home: CreateHomeDto, @User() user: UserInfo) {
+    return 'Ok';
     return this.homeService.createHome(home, user.id);
   }
 
   @Put(':id')
+  @Roles(UserType.REALTOR)
   async updateHome(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateHomeDto,
@@ -72,6 +76,7 @@ export class HomeController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(UserType.REALTOR)
   async deleteHome(
     @Param('id', ParseIntPipe) id: number,
     @User() user: UserInfo,
